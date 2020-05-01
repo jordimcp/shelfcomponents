@@ -1,0 +1,4 @@
+Random coverage? And more sends and recvs
+Configurable:
+  DATA WIDTH = 8
+  NO PARITY BIT
