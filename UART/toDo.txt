@@ -1,5 +1,4 @@
-Make Configurable:
-  DATA WIDTH
-  PARITY
-  STOP BIT
+Make Configurable:  
+  PARITY = None, Odd, Even
+  STOP BIT = 1, 2
 
