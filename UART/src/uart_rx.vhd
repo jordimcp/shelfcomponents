@@ -67,8 +67,10 @@ begin
         end if;
       when RX_START =>
         v.count := v.count + 1;
-        if v.rx = '1' then -- Glitch
-          v.next_state := IDLE;
+        if v.count = COUNT_BARRIER/2 then
+          if v.rx = '1' then -- Glitch
+            v.next_state := IDLE;
+          end if;
         end if;
         if v.count = COUNT_BARRIER then
           v.count_bits := v.count_bits + 1;
