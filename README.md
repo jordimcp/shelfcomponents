@@ -5,7 +5,7 @@ Simulation dependencies:
 - OSVVM
 - GHDL
 
-Early stage repository, it is just for fun project...(with all the consequences)
+Early stage repository, it is a just for fun project...(with all the consequences)
 
 Structure of components:
   - Name_of_component:
@@ -14,6 +14,6 @@ Structure of components:
     - Src: 
       - *.vhdl: files to be included on your desing
 
-    - *.sh: Script to test the component using GHDL and OSVVM
+    - *.sh: Script for linux to test the component using GHDL and OSVVM
     
     - toDo.txt: things missing on the desing
