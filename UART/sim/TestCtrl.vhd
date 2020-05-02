@@ -82,7 +82,11 @@ begin
     WaitForClock(UartTxRec, 2);
 
     --  Sequence 1
-    Send(UartTxRec, X"50");    
+    Send(UartTxRec, X"50");
+    Send(UartTxRec, X"51");
+    Send(UartTxRec, X"52");
+    Send(UartTxRec, X"53");
+    Send(UartTxRec, X"54");
     ------------------------------------------------------------
     -- End of test.  Wait for outputs to propagate and signal TestDone
     wait for 4 * UART_BAUD_PERIOD_115200;
@@ -103,13 +107,26 @@ begin
   begin
     GetAlertLogID(UartRxRec, UartRxID);
     WaitForClock(UartRxRec, 2);
-    ExpectStim := (X"50", UARTTB_NO_ERROR);
-    -- Get with one parameter
-    Get(UartRxRec, RxStim.Data);
-    RxStim.Error := std_logic_vector(UartRxRec.ErrorFromModel);
-    AffirmIf(osvvm_UART.UartTbPkg.Match(RxStim, ExpectStim),
-    "Received: " & to_string(RxStim),
-    ".  Expected: " & to_string(ExpectStim));
+    for i in 0 to 4 loop
+      case i is
+        when 0 =>
+          ExpectStim := (X"50", UARTTB_NO_ERROR);
+        when 1 =>
+          ExpectStim := (X"51", UARTTB_NO_ERROR);
+        when 2 =>
+          ExpectStim := (X"52", UARTTB_NO_ERROR);
+        when 3 =>
+          ExpectStim := (X"53", UARTTB_NO_ERROR);
+        when 4 =>
+          ExpectStim := (X"54", UARTTB_NO_ERROR);
+      end case;
+      -- Get with one parameter
+      Get(UartRxRec, RxStim.Data);
+      RxStim.Error := std_logic_vector(UartRxRec.ErrorFromModel);
+      AffirmIf(osvvm_UART.UartTbPkg.Match(RxStim, ExpectStim),
+      "Received: " & to_string(RxStim),
+      ".  Expected: " & to_string(ExpectStim));
+    end loop;
     --
     ------------------------------------------------------------
     -- End of test.  Wait for outputs to propagate and signal TestDone
