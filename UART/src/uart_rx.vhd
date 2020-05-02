@@ -7,14 +7,15 @@ use work.all;
 
 entity uart_rx is
   generic (
-    CLK_PERIOD_NS  : time := 10 ns;
-    UART_PERIOD_NS : time := 8680 ns
+    CLK_PERIOD_NS  : time    := 10 ns;
+    UART_PERIOD_NS : time    := 8680 ns;
+    DATA_WIDTH     : integer := 8
   );
   port (
     clk       : in std_logic;
     rstn      : in std_logic;
     recv_word : out std_logic;
-    word      : out std_logic_vector(7 downto 0);
+    word      : out std_logic_vector(DATA_WIDTH - 1 downto 0);
     busy_rx   : out std_logic;
     rx        : in std_logic
   );
@@ -30,8 +31,7 @@ architecture Behavioral of uart_rx is
     count      : integer;
     count_bits : integer;
     recv_word  : std_logic;
-    word       : std_logic_vector(7 downto 0);
-    word2send  : std_logic_vector(9 downto 0);
+    word       : std_logic_vector(DATA_WIDTH - 1 downto 0);
     rx         : std_logic;
   end record;
 
@@ -43,7 +43,6 @@ architecture Behavioral of uart_rx is
   count_bits => 0,
   recv_word  => '0',
   word => (others => '0'),
-  word2send => (others => '0'),
   rx         => '1'
   );
   constant COUNT_BARRIER : natural   := UART_PERIOD_NS / CLK_PERIOD_NS;
@@ -80,14 +79,14 @@ begin
       when RCV =>
         v.count := v.count + 1;
         if v.count = COUNT_BARRIER/2 then
-          v.word(6 downto 0) := v.word(7 downto 1);
-          v.word(7)          := v.rx;
+          v.word(word'high - 1 downto 0) := v.word(word'high downto 1);
+          v.word(word'high)              := v.rx;
         end if;
         if v.count = COUNT_BARRIER then
           v.count_bits := v.count_bits + 1;
           v.count      := 0;
           v.next_state := RCV;
-          if v.count_bits = 9 then
+          if v.count_bits = DATA_WIDTH + 1 then
             v.next_state := RX_STOP;
           end if;
         end if;

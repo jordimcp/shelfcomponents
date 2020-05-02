@@ -7,19 +7,20 @@ use work.all;
 
 entity top_uart is
   generic (
-    CLK_PERIOD_NS  : time := 10 ns;
-    UART_PERIOD_NS : time := 8680 ns
+    CLK_PERIOD_NS  : time    := 10 ns;
+    UART_PERIOD_NS : time    := 8680 ns;
+    DATA_WIDTH     : integer range 5 to 8 := 8
   );
   port (
     clk  : in std_logic;
     rstn : in std_logic;
     -- RX INTERFACE
     new_word_rx : out std_logic;
-    word_rx     : out std_logic_vector(7 downto 0);
+    word_rx     : out std_logic_vector(DATA_WIDTH-1 downto 0);
     busy_rx     : out std_logic;
     -- TX INTERFACE
     new_word_tx : in std_logic;
-    word_tx     : in std_logic_vector(7 downto 0);
+    word_tx     : in std_logic_vector(DATA_WIDTH-1 downto 0);
     busy_tx     : out std_logic;
     -- UART INTERFACE
     rx : in std_logic;
@@ -34,7 +35,8 @@ begin
   uart_tx_inst : entity work.uart_tx
     generic map(
       CLK_PERIOD_NS  => CLK_PERIOD_NS,
-      UART_PERIOD_NS => UART_PERIOD_NS
+      UART_PERIOD_NS => UART_PERIOD_NS,
+      DATA_WIDTH     => DATA_WIDTH
     )
     port map(
       clk       => clk,
@@ -48,7 +50,8 @@ begin
   uart_rx_inst : entity work.uart_rx
     generic map(
       CLK_PERIOD_NS  => CLK_PERIOD_NS,
-      UART_PERIOD_NS => UART_PERIOD_NS
+      UART_PERIOD_NS => UART_PERIOD_NS,
+      DATA_WIDTH     => DATA_WIDTH
     )
     port map(
       clk       => clk,

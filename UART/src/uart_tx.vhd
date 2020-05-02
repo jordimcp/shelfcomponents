@@ -7,14 +7,15 @@ use work.all;
 
 entity uart_tx is
   generic (
-    CLK_PERIOD_NS  : time := 10 ns;
-    UART_PERIOD_NS : time := 8680 ns
+    CLK_PERIOD_NS  : time    := 10 ns;
+    UART_PERIOD_NS : time    := 8680 ns;
+    DATA_WIDTH     : integer := 8
   );
   port (
     clk       : in std_logic;
     rstn      : in std_logic;
     send_word : in std_logic;
-    word      : in std_logic_vector(7 downto 0);
+    word      : in std_logic_vector(DATA_WIDTH-1 downto 0);
     busy_tx   : out std_logic;
     tx        : out std_logic
   );
@@ -26,8 +27,8 @@ architecture Behavioral of uart_tx is
     count      : integer;
     count_bits : integer;
     send_word  : std_logic;
-    word       : std_logic_vector(7 downto 0);
-    word2send  : std_logic_vector(9 downto 0);
+    word       : std_logic_vector(DATA_WIDTH-1 downto 0);
+    word2send  : std_logic_vector(DATA_WIDTH+1+1-1 downto 0);
     tx         : std_logic;
   end record;
 
@@ -65,7 +66,7 @@ begin
         v.count_bits            := v.count_bits + 1;
         v.count                 := 0;
         v.tx                    := v.word2send(0);
-        v.word2send(8 downto 0) := v.word2send(9 downto 1);
+        v.word2send(v.word2send'high-1 downto 0) := v.word2send(v.word2send'high downto 1);
         if v.count_bits = v.word2send'length + 1 then
           v.sending    := '0';
           v.tx         := '1';
