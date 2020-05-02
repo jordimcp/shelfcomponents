@@ -18,19 +18,20 @@ end tbUart;
 
 architecture TestHarness of tbUart is
 
-  constant tperiod_Clk  : time      := 10 ns;
-  constant tpd          : time      := 2 ns;
-  constant tperiod_Uart : time      := 8680 ns;
-  signal Clk            : std_logic := '0';
-  signal nReset         : std_logic;
+  constant tperiod_Clk      : time                := 10 ns;
+  constant tpd              : time                := 2 ns;
+  constant tperiod_Uart     : time                := 8680 ns;
+  constant DATA_WIDTH       : integer             := 5;
+  signal Clk                : std_logic           := '0';
+  signal nReset             : std_logic;
 
   -- Uart Interface
-  signal rx : std_logic;
-  signal tx : std_logic;
-  signal busy_tx    : std_logic;
-  signal busy_rx    : std_logic;
-  signal new_word_rx  : std_logic;
-  signal word_rx       : std_logic_vector(7 downto 0);
+  signal rx          : std_logic;
+  signal tx          : std_logic;
+  signal busy_tx     : std_logic;
+  signal busy_rx     : std_logic;
+  signal new_word_rx : std_logic;
+  signal word_rx     : std_logic_vector(DATA_WIDTH - 1 downto 0);
   ------------------------------------------------------------
   -- Stimulus generation and synchronization
   ------------------------------------------------------------
@@ -51,7 +52,7 @@ architecture TestHarness of tbUart is
   signal UartRxRec : UartRecType;
 
 begin
-
+  
   ------------------------------------------------------------
   -- create Clock 
   Osvvm.TbUtilPkg.CreateClock (
@@ -75,7 +76,8 @@ begin
   dut_inst : entity work.top_uart
     generic map(
       CLK_PERIOD_NS  => tperiod_Clk,
-      UART_PERIOD_NS => tperiod_Uart
+      UART_PERIOD_NS => tperiod_Uart,
+      DATA_WIDTH     => DATA_WIDTH
     )
     port map(
       clk  => Clk,
@@ -97,7 +99,7 @@ begin
   ------------------------------------------------------------
   generic map(
     DEFAULT_BAUD          => UART_BAUD_PERIOD_115200,
-    DEFAULT_NUM_DATA_BITS => UARTTB_DATA_BITS_8,
+    DEFAULT_NUM_DATA_BITS => DATA_WIDTH,
     DEFAULT_PARITY_MODE   => UARTTB_PARITY_NONE,
     DEFAULT_NUM_STOP_BITS => UARTTB_STOP_BITS_1
   )
@@ -111,7 +113,7 @@ begin
   ------------------------------------------------------------
   generic map(
     DEFAULT_BAUD          => UART_BAUD_PERIOD_115200,
-    DEFAULT_NUM_DATA_BITS => UARTTB_DATA_BITS_8,
+    DEFAULT_NUM_DATA_BITS => DATA_WIDTH,
     DEFAULT_PARITY_MODE   => UARTTB_PARITY_NONE,
     DEFAULT_NUM_STOP_BITS => UARTTB_STOP_BITS_1
   )
@@ -129,8 +131,8 @@ begin
   port map(
     UartTxRec => UartTxRec,
     UartRxRec => UartRxRec,
-    Clk    => Clk,
-    nReset => nReset
+    Clk       => Clk,
+    nReset    => nReset
   );
 
 end TestHarness;

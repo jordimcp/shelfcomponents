@@ -75,6 +75,7 @@ begin
   UartTbTxProc : process
     variable UartTxID                     : AlertLogIDType;
     variable TransactionCount, ErrorCount : integer;
+    variable word : std_logic_vector(4 downto 0);
   begin
 
     GetAlertLogID(UartTxRec, UartTxID);
@@ -82,11 +83,12 @@ begin
     WaitForClock(UartTxRec, 2);
 
     --  Sequence 1
-    Send(UartTxRec, X"50");
-    Send(UartTxRec, X"51");
-    Send(UartTxRec, X"52");
-    Send(UartTxRec, X"53");
-    Send(UartTxRec, X"54");
+    Send(UartTxRec, X"00");
+    Send(UartTxRec, X"01");
+    Send(UartTxRec, X"02");
+    Send(UartTxRec, X"03");
+    Send(UartTxRec, X"04");
+    
     ------------------------------------------------------------
     -- End of test.  Wait for outputs to propagate and signal TestDone
     wait for 4 * UART_BAUD_PERIOD_115200;
@@ -110,15 +112,15 @@ begin
     for i in 0 to 4 loop
       case i is
         when 0 =>
-          ExpectStim := (X"50", UARTTB_NO_ERROR);
+          ExpectStim := (X"00", UARTTB_NO_ERROR);
         when 1 =>
-          ExpectStim := (X"51", UARTTB_NO_ERROR);
+          ExpectStim := (X"01", UARTTB_NO_ERROR);
         when 2 =>
-          ExpectStim := (X"52", UARTTB_NO_ERROR);
+          ExpectStim := (X"02", UARTTB_NO_ERROR);
         when 3 =>
-          ExpectStim := (X"53", UARTTB_NO_ERROR);
+          ExpectStim := (X"03", UARTTB_NO_ERROR);
         when 4 =>
-          ExpectStim := (X"54", UARTTB_NO_ERROR);
+          ExpectStim := (X"04", UARTTB_NO_ERROR);
       end case;
       -- Get with one parameter
       Get(UartRxRec, RxStim.Data);
