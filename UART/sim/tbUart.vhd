@@ -18,18 +18,24 @@ end tbUart;
 
 architecture TestHarness of tbUart is
 
-  constant tperiod_Clk      : time                := 10 ns;
-  constant tpd              : time                := 2 ns;
-  constant tperiod_Uart     : time                := 8680 ns;
-  constant DATA_WIDTH       : integer             := 5;
-  signal Clk                : std_logic           := '0';
-  signal nReset             : std_logic;
+  constant tperiod_Clk       : time    := 10 ns;
+  constant tpd               : time    := 2 ns;
+  constant tperiod_Uart      : time    := 8680 ns;
+  --- TEST PARAMETERS
+  constant DATA_WIDTH        : integer := 8;
+  constant N_PARITY          : integer := 1;
+  constant PARITY_TYPE       : integer := 1; -- 0 Even, 1 Odd
+  constant OSSVM_PARITY_TYPE : integer := 1; -- 0 None, 1 Odd, 3 Even
+   
+  signal Clk    : std_logic := '0';
+  signal nReset : std_logic;
 
   -- Uart Interface
   signal rx          : std_logic;
   signal tx          : std_logic;
   signal busy_tx     : std_logic;
   signal busy_rx     : std_logic;
+  signal parity_rx   : std_logic;
   signal new_word_rx : std_logic;
   signal word_rx     : std_logic_vector(DATA_WIDTH - 1 downto 0);
   ------------------------------------------------------------
@@ -52,7 +58,7 @@ architecture TestHarness of tbUart is
   signal UartRxRec : UartRecType;
 
 begin
-  
+
   ------------------------------------------------------------
   -- create Clock 
   Osvvm.TbUtilPkg.CreateClock (
@@ -77,7 +83,9 @@ begin
     generic map(
       CLK_PERIOD_NS  => tperiod_Clk,
       UART_PERIOD_NS => tperiod_Uart,
-      DATA_WIDTH     => DATA_WIDTH
+      DATA_WIDTH     => DATA_WIDTH,
+      N_PARITY_BIT   => N_PARITY,
+      PARITY_TYPE    => PARITY_TYPE
     )
     port map(
       clk  => Clk,
@@ -86,6 +94,7 @@ begin
       new_word_rx => new_word_rx,
       word_rx     => word_rx,
       busy_rx     => busy_rx,
+      parity_rx   => parity_rx,
       -- TX INTERFACE
       new_word_tx => new_word_rx,
       word_tx     => word_rx,
@@ -100,7 +109,7 @@ begin
   generic map(
     DEFAULT_BAUD          => UART_BAUD_PERIOD_115200,
     DEFAULT_NUM_DATA_BITS => DATA_WIDTH,
-    DEFAULT_PARITY_MODE   => UARTTB_PARITY_NONE,
+    DEFAULT_PARITY_MODE   => OSSVM_PARITY_TYPE, --UARTTB_PARITY_EVEN,--UARTTB_PARITY_NONE,
     DEFAULT_NUM_STOP_BITS => UARTTB_STOP_BITS_1
   )
   port map(
@@ -114,7 +123,7 @@ begin
   generic map(
     DEFAULT_BAUD          => UART_BAUD_PERIOD_115200,
     DEFAULT_NUM_DATA_BITS => DATA_WIDTH,
-    DEFAULT_PARITY_MODE   => UARTTB_PARITY_NONE,
+    DEFAULT_PARITY_MODE   => OSSVM_PARITY_TYPE, --UARTTB_PARITY_EVEN,--UARTTB_PARITY_NONE,
     DEFAULT_NUM_STOP_BITS => UARTTB_STOP_BITS_1
   )
   port map(
