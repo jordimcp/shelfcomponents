@@ -16,11 +16,10 @@ TOP_UART="./src/top_uart.vhd"
 #SIM
 TOP_TB="./sim/tbUart.vhd"
 TEST_CTRL="./sim/TestCtrl.vhd"
-#CONF
-CONF="./sim/SendGet_kO1.vhd"
 NAME_TB="tbUart"
 WAVE_NAME="tbUart.ghw"
-
+#CONFIGURATION: kN1 or kE1 or kO1
+CONF="./sim/SendGet_kO1.vhd"
 
 ghdl -i --work=$LIBRARY --workdir=$WORK_DIR --std=08 -P$PATH_OSVVM -P$PATH_OSVV_UART -P$PATH_OSVVM_COMMON \
 $UART_TX $UART_RX $TOP_UART $TEST_CTRL $CONF $TOP_TB
