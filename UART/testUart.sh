@@ -14,14 +14,16 @@ UART_TX="./src/uart_tx.vhd"
 UART_RX="./src/uart_rx.vhd"
 TOP_UART="./src/top_uart.vhd"
 #SIM
-TEST_CTRL="./sim/TestCtrl.vhd"
 TOP_TB="./sim/tbUart.vhd"
+TEST_CTRL="./sim/TestCtrl.vhd"
+#CONF
+CONF="./sim/SendGet_kO1.vhd"
 NAME_TB="tbUart"
 WAVE_NAME="tbUart.ghw"
 
 
 ghdl -i --work=$LIBRARY --workdir=$WORK_DIR --std=08 -P$PATH_OSVVM -P$PATH_OSVV_UART -P$PATH_OSVVM_COMMON \
-$UART_TX $UART_RX $TOP_UART $TEST_CTRL $TOP_TB
+$UART_TX $UART_RX $TOP_UART $TEST_CTRL $CONF $TOP_TB
 
 ghdl -m --work=$LIBRARY --workdir=$WORK_DIR --std=08 -P$PATH_OSVVM -P$PATH_OSVV_UART -P$PATH_OSVVM_COMMON \
 $NAME_TB
