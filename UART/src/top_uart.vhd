@@ -7,21 +7,24 @@ use work.all;
 
 entity top_uart is
   generic (
-    CLK_PERIOD_NS  : time    := 10 ns;
-    UART_PERIOD_NS : time    := 8680 ns;
-    DATA_WIDTH     : integer range 5 to 8 := 8
+    CLK_PERIOD_NS  : time                 := 10 ns;
+    UART_PERIOD_NS : time                 := 8680 ns;
+    DATA_WIDTH     : integer range 5 to 8 := 8;
+    N_PARITY_BIT   : integer range 0 to 1 := 0;
+    PARITY_TYPE    : integer range 0 to 1 := 0
   );
   port (
     clk  : in std_logic;
     rstn : in std_logic;
     -- RX INTERFACE
     new_word_rx : out std_logic;
-    word_rx     : out std_logic_vector(DATA_WIDTH-1 downto 0);
+    word_rx     : out std_logic_vector(DATA_WIDTH - 1 downto 0);
     busy_rx     : out std_logic;
     -- TX INTERFACE
     new_word_tx : in std_logic;
-    word_tx     : in std_logic_vector(DATA_WIDTH-1 downto 0);
+    word_tx     : in std_logic_vector(DATA_WIDTH - 1 downto 0);
     busy_tx     : out std_logic;
+    parity_rx   : out std_logic;
     -- UART INTERFACE
     rx : in std_logic;
     tx : out std_logic
@@ -36,7 +39,9 @@ begin
     generic map(
       CLK_PERIOD_NS  => CLK_PERIOD_NS,
       UART_PERIOD_NS => UART_PERIOD_NS,
-      DATA_WIDTH     => DATA_WIDTH
+      DATA_WIDTH     => DATA_WIDTH,
+      PARITY_TYPE    => PARITY_TYPE,
+      N_PARITY_BIT   => N_PARITY_BIT
     )
     port map(
       clk       => clk,
@@ -51,7 +56,8 @@ begin
     generic map(
       CLK_PERIOD_NS  => CLK_PERIOD_NS,
       UART_PERIOD_NS => UART_PERIOD_NS,
-      DATA_WIDTH     => DATA_WIDTH
+      DATA_WIDTH     => DATA_WIDTH,
+      N_PARITY_BIT   => N_PARITY_BIT
     )
     port map(
       clk       => clk,
@@ -59,6 +65,7 @@ begin
       recv_word => new_word_rx,
       word      => word_rx,
       busy_rx   => busy_rx,
+      parity_rx => parity_rx,
       rx        => rx
     );
 end architecture;

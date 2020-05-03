@@ -9,25 +9,28 @@ entity uart_rx is
   generic (
     CLK_PERIOD_NS  : time    := 10 ns;
     UART_PERIOD_NS : time    := 8680 ns;
-    DATA_WIDTH     : integer := 8
+    DATA_WIDTH     : integer := 8;
+    N_PARITY_BIT   : integer := 0
   );
   port (
     clk       : in std_logic;
     rstn      : in std_logic;
     recv_word : out std_logic;
     word      : out std_logic_vector(DATA_WIDTH - 1 downto 0);
+    parity_rx : out std_logic;
     busy_rx   : out std_logic;
     rx        : in std_logic
   );
 end entity;
 
 architecture Behavioral of uart_rx is
-  type state_type is (IDLE, RX_START, RCV, RX_STOP);
+  type state_type is (IDLE, RX_START, RCV, RX_PARITY, RX_STOP);
 
   type reg_type is record
     state      : state_type;
     next_state : state_type;
     recving    : std_logic;
+    parity_bit : std_logic;
     count      : integer;
     count_bits : integer;
     recv_word  : std_logic;
@@ -39,6 +42,7 @@ architecture Behavioral of uart_rx is
   state      => IDLE,
   next_state => IDLE,
   recving    => '0',
+  parity_bit => '0',
   count      => 0,
   count_bits => 0,
   recv_word  => '0',
@@ -85,16 +89,27 @@ begin
         if v.count = COUNT_BARRIER then
           v.count_bits := v.count_bits + 1;
           v.count      := 0;
-          v.next_state := RCV;
           if v.count_bits = DATA_WIDTH + 1 then
-            v.next_state := RX_STOP;
+            if N_PARITY_BIT = 0 then
+              v.next_state := RX_STOP;
+            else
+              v.next_state := RX_PARITY;
+            end if;
           end if;
+        end if;
+      when RX_PARITY =>
+        v.count := v.count + 1;
+        if v.count = COUNT_BARRIER/2 then
+          v.parity_bit := v.rx;
+        end if;
+        if v.count = COUNT_BARRIER then
+          v.count      := 0;
+          v.next_state := RX_STOP;
         end if;
       when RX_STOP =>
         v.count := v.count + 1;
         if v.count = COUNT_BARRIER then
           v.recv_word  := '1';
-          v.count_bits := v.count_bits + 1;
           v.count      := 0;
           v.next_state := IDLE;
           -- if tx is not 1 means an error
@@ -112,6 +127,7 @@ begin
     busy_rx   <= r.recving;
     recv_word <= r.recv_word;
     word      <= r.word;
+    parity_rx <= r.parity_bit;
   end process;
 
   process (clk, rstn)
