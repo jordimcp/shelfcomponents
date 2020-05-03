@@ -1,4 +1,3 @@
-Make Configurable:  
-  PARITY = None, Odd, Even
+Make Configurable:   
   STOP BIT = 1, 2
 
