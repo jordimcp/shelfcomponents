@@ -23,7 +23,7 @@ architecture TestHarness of tbUart is
   constant tperiod_Uart      : time    := 8680 ns;
   --- TEST PARAMETERS
   constant DATA_WIDTH        : integer := 8;
-  constant N_PARITY          : integer := 1;
+  constant N_PARITY          : integer := 1; -- 0 None, 1 bit
   constant PARITY_TYPE       : integer := 1; -- 0 Even, 1 Odd
   constant OSSVM_PARITY_TYPE : integer := 1; -- 0 None, 1 Odd, 3 Even
    
