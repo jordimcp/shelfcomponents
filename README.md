@@ -12,7 +12,7 @@ Structure of components:
     - Sim:
       - *.vhd : all files needed for test
     - Src: 
-      - *.vhdl: files to be included on your desing
+      - *.vhd: files to be included on your desing
 
     - *.sh: Script for linux to test the component using GHDL and OSVVM
     
